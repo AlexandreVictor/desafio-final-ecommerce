@@ -1,0 +1,3 @@
+pytest>=7.0         # testes automatizados
+matplotlib>=3.5     # geracao de grafico de faturamento (bonus)
+tabulate>=0.10.0    # impressao de tabelas formatadas

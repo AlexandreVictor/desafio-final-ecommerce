@@ -46,7 +46,9 @@ def produto_mais_vendido(conexao: sqlite3.Connection):
 def pedidos_por_cliente(conexao: sqlite3.Connection):
     """GROUP BY + COUNT: quantidade de pedidos por cliente."""
     sql = """
-        SELECT c.nome AS cliente, COUNT(p.id_pedido) AS qtd_pedidos
+        SELECT 
+            c.nome AS cliente, 
+            COUNT(p.id_pedido) AS qtd_pedidos
         FROM clientes c
         LEFT JOIN pedidos p ON p.id_cliente = c.id_cliente
         GROUP BY c.nome
@@ -54,7 +56,6 @@ def pedidos_por_cliente(conexao: sqlite3.Connection):
     """
     return conexao.execute(sql).fetchall()
 
-#REFATORAR 
 def ticket_medio(conexao: sqlite3.Connection):
     """AVG: valor medio gasto por pedido."""
     sql = """
@@ -79,3 +80,16 @@ def produtos_com_estoque_baixo(conexao: sqlite3.Connection, limite: int = 25):
     """WHERE simples: produtos com estoque abaixo de um limite."""
     sql = "SELECT nome, categoria, estoque FROM produtos WHERE estoque < ? ORDER BY estoque;"
     return conexao.execute(sql, (limite,)).fetchall()
+
+def faturamento_por_produto(conexao: sqlite3.Connection):
+    """Faturamento total por produto (para relatorios)."""
+    sql = """
+        SELECT 
+            pr.nome AS produto, 
+            SUM(ip.quantidade * ip.preco_unit) AS faturamento
+        FROM itens_pedido ip
+        JOIN produtos pr ON pr.id_produto = ip.id_produto
+        GROUP BY pr.nome
+        ORDER BY faturamento DESC;
+    """
+    return conexao.execute(sql).fetchall()
