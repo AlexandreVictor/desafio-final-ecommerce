@@ -7,27 +7,12 @@ escolher qual relatorio deseja ver, alem de opcoes de cadastro (bonus).
 import sqlite3
 import sys
 
-try:
-    from ..data import cadastro, database, queries, relatorios
-except ImportError:
-    # Permite rodar "python src/main.py" diretamente (sem -m)
-    import cadastro
-    import database
-    import queries
-    #import relatorios
-
-"""
-Imprime uma tabela formatada no terminal a partir de uma lista de linhas e colunas.
-"""
-def imprimir_tabela(linhas, colunas):
-    if not linhas:
-        print("Nenhum resultado encontrado.\n")
-        return
-    print(" | ".join(colunas))
-    print("-" * 50)
-    for linha in linhas:
-        print(" | ".join(str(linha[coluna]) for coluna in colunas))
-    print()
+# Permite rodar "python src/main.py" diretamente (sem -m)
+import cadastro
+import database
+import queries
+import relatorios
+from utils import imprimir_tabela
 
 
 def menu() -> None:
@@ -41,8 +26,8 @@ def menu() -> None:
 6. Produtos com estoque baixo
 7. Cadastrar novo produto
 8. Cadastrar novo pedido
-9. Exportar faturamento para CSV
-10. Gerar grafico de faturamento (PNG)
+9. Exportar faturamento para CSV*
+10. Gerar grafico de faturamento (PNG)*
 0. Sair
 =========================================
 """
@@ -61,18 +46,16 @@ def executar_opcao(conexao: sqlite3.Connection, opcao: str) -> None:
             imprimir_tabela(linhas, ["produto", "qtd_vendas", "faturamento"])
 
         elif opcao == "3":
-            #linhas = queries.pedidos_por_cliente(conexao)
+            linhas = queries.pedidos_por_cliente(conexao)
             imprimir_tabela(linhas, ["cliente", "qtd_pedidos"])
 
         elif opcao == "4":
-            #resultado = queries.ticket_medio(conexao)
-            resultado = []
+            resultado = queries.ticket_medio(conexao)
             valor = resultado["ticket_medio"]
             print(f"Ticket medio: R$ {valor:.2f}\n" if valor else "Sem pedidos registrados.\n")
 
         elif opcao == "5":
-            #linhas = queries.resumo_clientes(conexao)
-            linhas = []
+            linhas = queries.resumo_clientes(conexao)
             imprimir_tabela(linhas, ["id_cliente", "nome", "cidade", "total_pedidos", "total_gasto"])
 
         elif opcao == "6":
